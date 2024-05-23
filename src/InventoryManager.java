@@ -63,7 +63,6 @@ public class InventoryManager {
             System.out.println("Error: " + e.getMessage());
             newProduct = "Bug-Shaped Candy";
         }
-        System.out.println("New product: " + newProduct);
         return newProduct;
     }
 

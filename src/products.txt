@@ -35,7 +35,7 @@ Tomato Sauce
 Lasagna Noodles
 Soy Sauce
 Rice
-Tofu 
+Tofu
 Broccoli
 Spinach
 Green Pepper
@@ -66,13 +66,13 @@ Bag of Red Lentils
 Canola Oil
 Vegetable Oil
 Olive Oil
-Steak 
-Pork 
+Steak
+Pork
 Chocolate Ice Cream
 Vanilla Ice Cream
 BBQ Chips
 Soda
-Bag of Potatoes 
+Bag of Potatoes
 Yellow Onion
 Red Onion
 Chickpeas
@@ -84,11 +84,11 @@ Eggplant
 Dark Chocolate Bar
 Milk Chocolate Bar
 Cough Drops
-Jar of Kimchi 
+Jar of Kimchi
 Ground Beef
-Margerine
+Margarine
 Butter
-Mayonaise
+Mayonnaise
 Mustard
 Ketchup
 BBQ Sauce
