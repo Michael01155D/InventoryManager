@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
@@ -22,6 +23,15 @@ public class InventoryManager {
             this.products.put(serialCode, productName);
             //give each item a random starting inventory of 1-50;
             this.inventory.put(productName, new Random().nextInt(1, 51));
+        }
+    }
+
+    //constructor for if user generates their own starting products and inventory
+    public InventoryManager(HashMap<String, Integer> products) {
+        for (String productName : products.keySet()) {
+            String code = createSerialCode();
+            this.products.put(code, productName);
+            this.inventory.put(productName, products.get(productName));
         }
     }
 
@@ -79,5 +89,4 @@ public class InventoryManager {
             products.put(serialCode, newName);
         }
     }
-
 }
