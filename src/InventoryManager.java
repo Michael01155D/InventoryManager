@@ -2,6 +2,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.ArrayList;
 import java.io.File;
 
 public class InventoryManager {
@@ -16,9 +17,11 @@ public class InventoryManager {
         this.inventory = new HashMap<>();
         //populate default inventory with 5 randomly generated and unique starting items:
         for (int i = 0; i < 5; i++) {
-            //
-            String code = createSerialCode();
+            String serialCode = createSerialCode();
             String productName = createRandomProduct();
+            this.products.put(serialCode, productName);
+            //give each item a random starting inventory of 1-50;
+            this.inventory.put(productName, new Random().nextInt(1, 51));
         }
     }
 
@@ -34,8 +37,6 @@ public class InventoryManager {
                 code += (i % 2 == 0) ? ALPHA.split("")[rand.nextInt(52)] : NUM.split("")[rand.nextInt(10)];
             }
         } while (this.serialNumbers.contains(code));
-
-        System.out.println("Testing, the code generated is: " + code);
         this.serialNumbers.add(code);
         return code;
     }
@@ -45,26 +46,39 @@ public class InventoryManager {
         Scanner fileScan;
         String newProduct = "";
         try {
-            File productFile = new File("./products.txt");
+            File productFile = new File("src/products.txt");
             fileScan = new Scanner(productFile);
             Random rand = new Random();
-            String defaultProducts = "";
-            while (fileScan.hasNextLine()){
-                defaultProducts += fileScan.nextLine();
+            ArrayList<String> defaultProducts = new ArrayList<>();
+            while (fileScan.hasNextLine()) {
+                defaultProducts.add(fileScan.nextLine());
             }
-            String[] defaultProductsArr = defaultProducts.split("\n");
-            System.out.println("Debug check: array after reading from products file is: " + defaultProductsArr);
             //ensure product isn't in the inventory already
             do {
-                int randIndex = rand.nextInt(defaultProductsArr.length);
-                newProduct = defaultProductsArr[randIndex];
-            } while (this.products.values().contains(newProduct));
+                int randIndex = rand.nextInt(defaultProducts.size());
+                newProduct = defaultProducts.get(randIndex);
+            } while (this.products.containsValue(newProduct));
             
         } catch(Exception e) {
             System.out.println("Error: " + e.getMessage());
             newProduct = "Bug-Shaped Candy";
         }
+        System.out.println("New product: " + newProduct);
         return newProduct;
+    }
+
+    public String toString(){
+        String output = "#### Current Inventory ####";
+        for (String product: this.inventory.keySet()) {
+            output += "\n" + product + ", current stock: " + this.inventory.get(product);
+        }
+        return output;
+    }
+
+    public void renameProduct(String serialCode, String newName) {
+        if (products.containsKey(serialCode)) {
+            products.put(serialCode, newName);
+        }
     }
 
 }
