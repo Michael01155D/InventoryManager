@@ -1,4 +1,3 @@
-import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
@@ -54,17 +53,26 @@ public class InventoryManager {
         return code;
     }
 
-    //todo: ensure this doesn't execute do-while loop if all items in products.txt are in the inventory already!
     public String createRandomProduct() {
         Scanner fileScan;
         String newProduct = "";
+        //true if at least one item in txt file isnt in inventory
+        boolean safeToAdd = false;
         try {
             File productFile = new File("../products.txt");
             fileScan = new Scanner(productFile);
             Random rand = new Random();
             ArrayList<String> defaultProducts = new ArrayList<>();
             while (fileScan.hasNextLine()) {
-                defaultProducts.add(fileScan.nextLine());
+                String product = fileScan.nextLine();
+                defaultProducts.add(product);
+                if (!this.products.containsKey(product)) {
+                    safeToAdd = true;
+                }
+            }
+            if (!safeToAdd) {
+                System.out.println("Error: All possible default products are already in the inventory");
+                return null;
             }
             //ensure product isn't in the inventory already
             do {
@@ -79,17 +87,18 @@ public class InventoryManager {
         return newProduct;
     }
 
-    public String toString(){
-        String output = "#### Current Inventory ####";
-        for (String product: this.inventory.keySet()) {
-            output += "\n" + product + ", current stock: " + this.inventory.get(product);
-        }
-        return output;
-    }
-
     public void renameProduct(String serialCode, String newName) {
         if (products.containsKey(serialCode)) {
             products.put(serialCode, newName);
         }
+    }
+
+    public String toString(){
+        String output = "#### Current Inventory ####";
+        for (String serialCode: this.products.keySet()) {
+            String productName = this.products.get(serialCode);
+            output += "\nName: " + productName + ", Current Stock: " + this.inventory.get(productName) +", Serial Number: " + serialCode+".";
+        }
+        return output;
     }
 }

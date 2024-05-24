@@ -9,15 +9,38 @@ public class Main {
   public static void main(String[] args) {
     Scanner scanner = new Scanner(System.in);
     String input = "";
-    while (!input.toLowerCase().trim().equals("1") && !input.toLowerCase().trim().equals("2")) {
+    //check if input is neither 1 nor 2
+    while (!commandGiven(input, "1") && !commandGiven(input, "2")) {
       System.out.println("##### Please Type a Number for the Following Starting Inventory Options:\n[1]default\n[2]custom");
       input = scanner.next();
     }
     InventoryManager im = createInventoryManager(input);
     System.out.println(im);
+    boolean endProgram = false;
+    while (true) {
+      printCommands();
+      input = scanner.next();
+      switch(input.toLowerCase().trim()) {
+        case "inventory":
+          System.out.println(im);
+          break;
+        case "exit":
+          System.out.println("Closing shop for the day. Come again!");
+          endProgram = true;
+          break;
+        default:
+          System.out.println("Unrecognized command: " + input);
+          break;
+      }
+      if (endProgram) {
+        break;
+      }
+    }
+    
     scanner.close();
   }
 
+  //helper function to instantiate InventoryManager with either default or custom input
   public static InventoryManager createInventoryManager(String startingOption) {
     if (startingOption.equals("1")) {
       return new InventoryManager();
@@ -64,5 +87,12 @@ public class Main {
   //check if input matches command, or 'command' with single quotes
   public static boolean commandGiven(String input, String command ) {
     return input.toLowerCase().trim().equals(command) || input.toLowerCase().trim().equals("'"+command+"'");
+  }
+
+  //todo commands: add product, remove product, restock product, clear inventory, update product name,  
+  public static void printCommands(){
+    System.out.println("Please type one of the following commands:");
+    System.out.println("'inventory': Display the current inventory");
+    System.out.println("'exit': Exit the program");
   }
 }
