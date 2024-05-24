@@ -28,6 +28,9 @@ public class InventoryManager {
 
     //constructor for if user generates their own starting products and inventory
     public InventoryManager(HashMap<String, Integer> products) {
+        this.serialNumbers = new HashSet<>();
+        this.products = new HashMap<>();
+        this.inventory = new HashMap<>();
         for (String productName : products.keySet()) {
             String code = createSerialCode();
             this.products.put(code, productName);
@@ -56,7 +59,7 @@ public class InventoryManager {
         Scanner fileScan;
         String newProduct = "";
         try {
-            File productFile = new File("src/products.txt");
+            File productFile = new File("../products.txt");
             fileScan = new Scanner(productFile);
             Random rand = new Random();
             ArrayList<String> defaultProducts = new ArrayList<>();
