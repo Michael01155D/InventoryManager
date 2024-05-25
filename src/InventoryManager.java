@@ -90,7 +90,40 @@ public class InventoryManager {
     public void renameProduct(String serialCode, String newName) {
         if (products.containsKey(serialCode)) {
             products.put(serialCode, newName);
+        } else {
+            System.out.println("Error: " + serialCode + " not in the Inventory!");
         }
+    }
+
+    public void addProduct(String productName, Scanner scanner) {
+        if (this.products.containsValue(productName)) {
+            System.out.println("Error: " + productName + " is already in the Inventory!");
+            return;
+        }
+        //code gets added to HashSet inside fn
+        String newCode = this.createSerialCode();
+        this.products.put(newCode, productName);
+        System.out.println("Select a starting inventory amount for " + productName + "(0 to 999)");
+        int input = scanner.hasNextInt() ? scanner.nextInt() : 0;
+        if (input > 999) {
+            input = 999;
+        } else if (input < 0) {
+            input = 0;
+        }
+        System.out.println(productName + " has been added to the Inventory with " + input + " in stock");
+        this.inventory.put(productName, input);
+    }
+
+    public void setInventoryAmount(String productName, int newAmount) {
+        if (this.inventory.containsKey(productName)) {
+            this.inventory.put(productName, newAmount);
+        } else {
+            System.out.println("Error: " + productName + " is not in the Inventory!");
+        }
+    }
+
+    public void removeProduct(String serialCode) {
+
     }
 
     public String toString(){

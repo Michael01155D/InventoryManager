@@ -24,6 +24,11 @@ public class Main {
         case "inventory":
           System.out.println(im);
           break;
+        case "add":
+          System.out.println("Please enter the name of the product you'd like to add: ");
+          input = scanner.next();
+          im.addProduct(input, scanner);
+          break;
         case "exit":
           System.out.println("Closing shop for the day. Come again!");
           endProgram = true;
@@ -89,10 +94,11 @@ public class Main {
     return input.toLowerCase().trim().equals(command) || input.toLowerCase().trim().equals("'"+command+"'");
   }
 
-  //todo commands: add product, remove product, restock product, clear inventory, update product name,  
+  //todo commands: remove product, restock product, clear inventory, update product name,  
   public static void printCommands(){
     System.out.println("Please type one of the following commands:");
     System.out.println("'inventory': Display the current inventory");
+    System.out.println("'add': Add a new product to the inventory");
     System.out.println("'exit': Exit the program");
   }
 }
