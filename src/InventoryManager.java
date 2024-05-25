@@ -20,8 +20,8 @@ public class InventoryManager {
             String serialCode = createSerialCode();
             String productName = createRandomProduct();
             this.products.put(serialCode, productName);
-            //give each item a random starting inventory of 1-50;
-            this.inventory.put(productName, new Random().nextInt(1, 51));
+            //give each item a random starting inventory of 1-999;
+            this.inventory.put(productName, new Random().nextInt(1, 1000));
         }
     }
 
@@ -65,7 +65,7 @@ public class InventoryManager {
             ArrayList<String> defaultProducts = new ArrayList<>();
             while (fileScan.hasNextLine()) {
                 String product = fileScan.nextLine();
-                defaultProducts.add(product);
+                defaultProducts.add(product.toLowerCase());
                 if (!this.products.containsKey(product)) {
                     safeToAdd = true;
                 }
@@ -88,50 +88,85 @@ public class InventoryManager {
     }
 
     public void renameProduct(String serialCode, String newName) {
+        newName = newName.toLowerCase().trim();
         if (products.containsKey(serialCode)) {
             products.put(serialCode, newName);
         } else {
-            System.out.println("Error: " + serialCode + " not in the Inventory!");
+            System.out.println("\nError: " + serialCode + " not in the Inventory!");
         }
     }
 
     public void addProduct(String productName, Scanner scanner) {
+        productName = productName.toLowerCase().trim();
         if (this.products.containsValue(productName)) {
-            System.out.println("Error: " + productName + " is already in the Inventory!");
+            System.out.println("\nError: " + productName + " is already in the Inventory!");
             return;
         }
         //code gets added to HashSet inside fn
         String newCode = this.createSerialCode();
         this.products.put(newCode, productName);
-        System.out.println("Select a starting inventory amount for " + productName + "(0 to 999)");
-        int input = scanner.hasNextInt() ? scanner.nextInt() : 0;
-        if (input > 999) {
-            input = 999;
-        } else if (input < 0) {
-            input = 0;
+        System.out.println("\nSelect a starting inventory amount for " + productName + "(0 to 999)");
+        int input = 0;
+        if (scanner.hasNextInt()) {
+            input = scanner.nextInt();
+            //consume \n so scanner behaves as expected
+            scanner.nextLine();
         }
-        System.out.println(productName + " has been added to the Inventory with " + input + " in stock");
+        input = validateQuantity(input);
+        System.out.println("\n"+productName + " has been added to the Inventory with " + input + " in stock");
         this.inventory.put(productName, input);
     }
 
     public void setInventoryAmount(String productName, int newAmount) {
+        productName = productName.toLowerCase().trim();
         if (this.inventory.containsKey(productName)) {
+            newAmount = validateQuantity(newAmount);
             this.inventory.put(productName, newAmount);
-        } else {
-            System.out.println("Error: " + productName + " is not in the Inventory!");
+            System.out.println("\nInventory adjustment successful, there are now " + newAmount + " " + productName + " in stock.");
+            return;
         }
+
+        invalidProductError(productName);
     }
 
     public void removeProduct(String serialCode) {
 
     }
 
+    public int getProductAmount(String productName) {
+        productName = productName.toLowerCase().trim();
+        if (this.inventory.containsKey(productName)) {
+            return this.inventory.get(productName);
+        }
+        invalidProductError(productName);
+        return 0;
+    }
+
+    public void invalidProductError(String productName) {
+        System.out.println("\nError, " + productName + " is not in the Inventory!");
+    }
+
+    //if inputted stock amount is < 0 or > 999, adjust to one of those bounds
+    public int validateQuantity(int stock) {
+        if (stock > 999) {
+            System.out.println("\nError, stock must be between 0 to 999, setting stock to 999.");
+            stock = 999;
+        }
+        else if (stock < 0) {
+            System.out.println("\nError, stock must be between 0 to 999, setting stock to 0.");
+            stock = 0;
+        }
+
+        return stock;
+    }
+
     public String toString(){
-        String output = "#### Current Inventory ####";
+        String output = "\n########################## Current Inventory ##########################\n";
         for (String serialCode: this.products.keySet()) {
             String productName = this.products.get(serialCode);
-            output += "\nName: " + productName + ", Current Stock: " + this.inventory.get(productName) +", Serial Number: " + serialCode+".";
+            output += "\nName: " + productName + ", Current Stock: " + this.inventory.get(productName) +", Serial Number: " + serialCode+".\n";
         }
+        output += "\n#######################################################################\n";
         return output;
     }
 }
