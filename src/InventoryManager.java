@@ -52,7 +52,7 @@ public class InventoryManager {
         this.serialNumbers.add(code);
         return code;
     }
-
+    //populate default products with random ones from txt file
     public String createRandomProduct() {
         Scanner fileScan;
         String newProduct = "";
@@ -74,7 +74,7 @@ public class InventoryManager {
                 System.out.println("Error: All possible default products are already in the inventory");
                 return null;
             }
-            //ensure product isn't in the inventory already
+            //ensure product name is distinct
             do {
                 int randIndex = rand.nextInt(defaultProducts.size());
                 newProduct = defaultProducts.get(randIndex);
@@ -87,19 +87,35 @@ public class InventoryManager {
         return newProduct;
     }
 
-    public void renameProduct(String serialCode, String newName) {
+    public void renameProduct(String oldName, String newName) {
+        oldName = oldName.toLowerCase().trim();
         newName = newName.toLowerCase().trim();
-        if (products.containsKey(serialCode)) {
-            products.put(serialCode, newName);
-        } else {
-            System.out.println("\nError: " + serialCode + " not in the Inventory!");
+        if (!this.inventory.containsKey(oldName)) {
+            invalidProductError(oldName);
+            return;
+        }
+
+        if (this.inventory.containsKey(newName)) {
+            duplicateProductError(newName);
+            return;
+        }
+
+        for (String serialCode: this.products.keySet()) {
+            if (this.products.get(serialCode).equals(oldName)) {
+                this.products.put(serialCode, newName);
+                int stock = this.inventory.get(oldName);
+                this.inventory.remove(oldName);
+                this.inventory.put(newName, stock);
+                System.out.println("\nSuccessfully renamed " + oldName +" to " + newName);
+                return;
+            }
         }
     }
 
     public void addProduct(String productName, Scanner scanner) {
         productName = productName.toLowerCase().trim();
         if (this.products.containsValue(productName)) {
-            System.out.println("\nError: " + productName + " is already in the Inventory!");
+            duplicateProductError(productName);;
             return;
         }
         //code gets added to HashSet inside fn
@@ -129,8 +145,20 @@ public class InventoryManager {
         invalidProductError(productName);
     }
 
-    public void removeProduct(String serialCode) {
-
+    public void removeProduct(String productName) {
+        productName = productName.toLowerCase().trim();
+        if (this.inventory.containsKey(productName)) {
+            for (String serialCode : this.products.keySet()) {
+                if (this.products.get(serialCode).equals(productName)) {
+                    this.serialNumbers.remove(serialCode);
+                    this.products.remove(serialCode);
+                    this.inventory.remove(productName);
+                    System.out.println("\n"+ productName + " successfully removed from the Inventory.");
+                    return;
+                }
+            }
+        }
+        invalidProductError(productName);
     }
 
     public int getProductAmount(String productName) {
@@ -143,7 +171,11 @@ public class InventoryManager {
     }
 
     public void invalidProductError(String productName) {
-        System.out.println("\nError, " + productName + " is not in the Inventory!");
+        System.out.println("\nError: " + productName + " is not in the Inventory!");
+    }
+
+    public void duplicateProductError(String productName) {
+        System.out.println("\nError: " + productName + " is already in the Inventory!");
     }
 
     //if inputted stock amount is < 0 or > 999, adjust to one of those bounds
@@ -164,7 +196,7 @@ public class InventoryManager {
         String output = "\n########################## Current Inventory ##########################\n";
         for (String serialCode: this.products.keySet()) {
             String productName = this.products.get(serialCode);
-            output += "\nName: " + productName + ", Current Stock: " + this.inventory.get(productName) +", Serial Number: " + serialCode+".\n";
+            output += "\nName: " + productName + " | Current Stock: " + this.inventory.get(productName) +" | Serial Number: " + serialCode+" |\n";
         }
         output += "\n#######################################################################\n";
         return output;

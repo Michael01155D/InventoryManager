@@ -14,7 +14,7 @@ public class Main {
       System.out.println("----- Welcome! Please Type a Number for the Following Starting Inventory Options: -----\n[1]default\n[2]custom");
       input = scanner.nextLine();
     }
-    InventoryManager im = createInventoryManager(input);
+    InventoryManager im = createInventoryManager(input, scanner);
     System.out.println(im);
     boolean endProgram = false;
     while (true) {
@@ -27,16 +27,23 @@ public class Main {
           break;
         case "add":
           System.out.println("\nPlease enter the name of the product you'd like to add: ");
-          productName = scanner.nextLine();
+          do {
+            productName = scanner.nextLine().trim();
+          } while(productName.trim().isEmpty());
+
           im.addProduct(productName, scanner);
           break;
         case "remove":
-          System.out.println("todo");
+          System.out.println("Please enter the name of the product you'd like to remove: ");
+          do {
+            productName = scanner.nextLine().trim();
+          } while(productName.trim().isEmpty());
+          im.removeProduct(productName);
           break;
         case "restock":
           System.out.println(im);
           System.out.println("\nplease enter the name of the product whose stock you'd like to adjust:");
-          productName = scanner.nextLine();
+          productName = scanner.nextLine().trim();
           System.out.println("\nEnter the new stock amount (0 to 999):");
           int newStock = 0;
           try {
@@ -47,12 +54,22 @@ public class Main {
           input = scanner.nextLine();
           im.setInventoryAmount(productName, newStock);
           break;
+        case "rename":
+          System.out.println("\nPlease enter the name of the product you'd like to rename.");
+          String oldName = scanner.nextLine().trim();
+          System.out.println("\nPlease enter the new name for " + oldName +":");
+          String newName = "";
+          do {
+            newName = scanner.nextLine();
+          } while(newName.trim().isEmpty());
+          im.renameProduct(oldName, newName);
+          break;
         case "exit":
           System.out.println("\nClosing shop for the day. Come again!");
           endProgram = true;
           break;
         default:
-          System.out.println("\nError, invalid command: " + input);
+          System.out.println("\nError, invalid command: " + input.trim());
           break;
       }
       if (endProgram) {
@@ -64,15 +81,18 @@ public class Main {
   }
 
   //helper function to instantiate InventoryManager with either default or custom input
-  public static InventoryManager createInventoryManager(String startingOption) {
+  public static InventoryManager createInventoryManager(String startingOption, Scanner scanner) {
     if (startingOption.equals("1")) {
       return new InventoryManager();
     }
+
     HashMap<String, Integer> startingInventory = new HashMap<>();
-    Scanner scanner = new Scanner(System.in);
     while (true) {
       System.out.println("\nPlease enter the name of the product, or 'done' to finish setting up inventory");
-      String productName = scanner.nextLine().toLowerCase();
+      String productName = "";
+      do {
+        productName = scanner.nextLine().toLowerCase().trim();
+      } while (productName.trim().isEmpty());
       if (commandGiven(productName, "done")) {
         System.out.println("\nFinished adding items to the inventory.");
         break;
@@ -83,9 +103,9 @@ public class Main {
       //validate input for starting stock amount
       while (true){
         System.out.println("\nHow many " + productName +" are in stock? Please enter a number from 0 to 999, or 'cancel' to not add " + productName + " to inventory.");
-          String stock = scanner.nextLine();
+          String stock = scanner.nextLine().trim();
           if (commandGiven(stock, "cancel")) {
-            System.out.println(productName + "\n was not added to the inventory.");
+            System.out.println("\n" + productName + " was not added to the inventory.");
             break;
           }
           try {
@@ -103,7 +123,6 @@ public class Main {
           }
       }
     }
-    scanner.close();
     return  !(startingInventory.isEmpty()) ? new InventoryManager(startingInventory) : new InventoryManager();
   }
 
@@ -112,13 +131,14 @@ public class Main {
     return input.toLowerCase().trim().equals(command) || input.toLowerCase().trim().equals("'"+command+"'");
   }
 
-  //todo commands: remove product, restock product, clear inventory, update product name,  
+  //todo commands: clear inventory, update product name,  
   public static void printCommands(){
-    System.out.println("\nPlease type one of the following commands:");
+    System.out.println("\n****Please type one of the following commands:****");
     System.out.println("\n'inventory': Display the current inventory");
     System.out.println("\n'add': Add a new product to the inventory");
-    System.out.println("\n'remove': NOT YET IMPLEMENTED");
+    System.out.println("\n'remove': Remove an existing product from the inventory");
     System.out.println("\n'restock': Adjust a product's quantity");
+    System.out.println("\n'rename': Change a product's name");
     System.out.println("\n'exit': Exit the program");
   }
 }
