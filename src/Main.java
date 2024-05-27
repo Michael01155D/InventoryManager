@@ -64,6 +64,9 @@ public class Main {
           } while(newName.trim().isEmpty());
           im.renameProduct(oldName, newName);
           break;
+        case "clear":
+          im.clearInventory();
+          break;
         case "exit":
           System.out.println("\nClosing shop for the day. Come again!");
           endProgram = true;
@@ -131,7 +134,7 @@ public class Main {
     return input.toLowerCase().trim().equals(command) || input.toLowerCase().trim().equals("'"+command+"'");
   }
 
-  //todo commands: clear inventory, update product name,  
+  //todo commands: clear inventory, 
   public static void printCommands(){
     System.out.println("\n****Please type one of the following commands:****");
     System.out.println("\n'inventory': Display the current inventory");
@@ -139,6 +142,7 @@ public class Main {
     System.out.println("\n'remove': Remove an existing product from the inventory");
     System.out.println("\n'restock': Adjust a product's quantity");
     System.out.println("\n'rename': Change a product's name");
+    System.out.println("\n'clear': Clear out the entire inventory");
     System.out.println("\n'exit': Exit the program");
   }
 }

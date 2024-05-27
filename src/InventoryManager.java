@@ -170,6 +170,13 @@ public class InventoryManager {
         return 0;
     }
 
+    public void clearInventory() {
+        this.serialNumbers.clear();
+        this.inventory.clear();
+        this.products.clear();
+        System.out.println("The Inventory has been cleared off all products.");
+    }
+
     public void invalidProductError(String productName) {
         System.out.println("\nError: " + productName + " is not in the Inventory!");
     }
