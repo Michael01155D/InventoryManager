@@ -114,6 +114,8 @@ public class InventoryManager {
                 this.products.get(serialCode).setName(newName);
                 this.productNames.remove(oldName);
                 this.productNames.add(newName);
+                this.inventory.put(newName, this.inventory.get(oldName));
+                this.inventory.remove(oldName);
                 System.out.println("\nSuccessfully renamed " + oldName +" to " + newName);
                 return;
             }
@@ -188,7 +190,7 @@ public class InventoryManager {
         this.productNames.clear();
         this.inventory.clear();
         this.products.clear();
-        System.out.println("The Inventory has been cleared off all products.");
+        System.out.println("\nThe Inventory has been cleared off all products.");
     }
 
     public void invalidProductError(String productName) {

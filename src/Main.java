@@ -65,7 +65,13 @@ public class Main {
           im.renameProduct(oldName, newName);
           break;
         case "clear":
-          im.clearInventory();
+          System.out.println("\nWarning! This is a non-reversable action, are you sure you'd like to empty the entire Inventory? [y/n]");
+          input = scanner.nextLine();
+          if (input.toLowerCase().trim().equals("y") || input.toLowerCase().trim().equals("yes")) {
+            im.clearInventory();
+          } else {
+            System.out.println("\nConfirmation not received, cancelling command to clear the Inventory.");
+          }
           break;
         case "exit":
           System.out.println("\nClosing shop for the day. Come again!");
@@ -136,13 +142,14 @@ public class Main {
 
   //todo commands: clear inventory, 
   public static void printCommands(){
-    System.out.println("\n****Please type one of the following commands:****");
-    System.out.println("\n'inventory': Display the current inventory");
-    System.out.println("\n'add': Add a new product to the inventory");
-    System.out.println("\n'remove': Remove an existing product from the inventory");
-    System.out.println("\n'restock': Adjust a product's quantity");
-    System.out.println("\n'rename': Change a product's name");
-    System.out.println("\n'clear': Clear out the entire inventory");
-    System.out.println("\n'exit': Exit the program");
+    System.out.println("\n---- Please type one of the following commands: -----");
+    System.out.println("\n-'inventory': Display the current inventory");
+    System.out.println("\n-'add': Add a new product to the inventory");
+    System.out.println("\n-'remove': Remove an existing product from the inventory");
+    System.out.println("\n-'restock': Adjust a product's quantity");
+    System.out.println("\n-'rename': Change a product's name");
+    System.out.println("\n-'clear': Clear out the entire inventory");
+    System.out.println("\n-'exit': Exit the program");
+    System.out.println("\n------------------------------------------------------\n");
   }
 }
