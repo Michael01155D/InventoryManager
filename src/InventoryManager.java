@@ -17,8 +17,8 @@ public class InventoryManager {
         this.productNames = new HashSet<>();
         this.products = new HashMap<>();
         this.inventory = new HashMap<>();
-        //populate default inventory with 5 randomly generated and unique starting items:
-        for (int i = 0; i < 5; i++) {
+        //populate default inventory with 25 randomly generated and unique starting items:
+        for (int i = 0; i < 25; i++) {
             String productName = this.getRandomProductName();
             String productCode = this.createUniqueSerialCode();
             int startingInventory = new Random().nextInt(1, 1000);
@@ -217,6 +217,22 @@ public class InventoryManager {
 
     public boolean hasProduct(String productName) {
         return this.inventory.containsKey(productName);
+    }
+
+    public void searchInventory(String query) {
+        query = query.toLowerCase().trim();
+        ArrayList<Product> queryResults = new ArrayList<>();
+        boolean noMatches = true;
+        System.out.println("Search results: ");
+        for (Product product: this.products.values()) {
+            if (product.getName().contains(query)) {
+                System.out.println(product + " Current Stock: " + this.inventory.get(product.getName()));
+                noMatches = false;
+            }
+        }
+        if (noMatches) {
+            System.out.println("No matching results for " + query + " found in the Inventory");
+        }
     }
     public String toString(){
         String output = "\n########################## Current Inventory ##########################\n";

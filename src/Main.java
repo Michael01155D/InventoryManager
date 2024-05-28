@@ -34,6 +34,12 @@ public class Main {
             System.out.println(productName + " is not in the Inventory. You can add it with the 'add' command!");
           }
           break;
+        //list all product names that contain query substring:
+        case "search":
+          System.out.println("\nPlease enter the search query: ");
+          String query = scanner.nextLine();
+          im.searchInventory(query);
+          break;
         case "add":
           System.out.println("\nPlease enter the name of the product you'd like to add: ");
           do {
@@ -156,6 +162,7 @@ public class Main {
     System.out.println("\n---- Please type one of the following commands: -----");
     System.out.println("\n-'inventory': Display the current inventory");
     System.out.println("\n-'contains': Determine if a specific product is in the inventory");
+    System.out.println("\n-'search': Search the Inventory using a search term");
     System.out.println("\n-'add': Add a new product to the inventory");
     System.out.println("\n-'remove': Remove an existing product from the inventory");
     System.out.println("\n-'restock': Adjust a product's quantity");
