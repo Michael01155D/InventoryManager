@@ -68,7 +68,7 @@ public class InventoryManager {
         //true if at least one item in txt file isnt in inventory
         boolean safeToAdd = false;
         try {
-            File productFile = new File("../products.txt");
+            File productFile = new File("./products.txt");
             fileScan = new Scanner(productFile);
             Random rand = new Random();
             ArrayList<String> defaultProducts = new ArrayList<>();
