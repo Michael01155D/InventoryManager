@@ -38,7 +38,7 @@ public class InventoryManager {
         this.inventory = new HashMap<>();
         for (String productName : startingData.keySet()) {
             String code = createUniqueSerialCode();
-            Product newProduct = new Product(code, productName);
+            Product newProduct = new Product(productName, code);
             this.productNames.add(productName);
             this.products.put(code, newProduct);
             this.inventory.put(productName, startingData.get(productName));
@@ -215,6 +215,9 @@ public class InventoryManager {
         return stock;
     }
 
+    public boolean hasProduct(String productName) {
+        return this.inventory.containsKey(productName);
+    }
     public String toString(){
         String output = "\n########################## Current Inventory ##########################\n";
         for (Product product: this.products.values()) {

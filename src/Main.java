@@ -2,10 +2,7 @@ import java.util.HashMap;
 import java.util.Scanner;
 public class Main {
 
-//Inv manager has: Map of Serial Code: PName. Map of Serial Code: qty, HashSet of serial codes
-//methods: clear inventory, addStock, checkInventory, sellItem, addItem, removeItem, 
 
-//next todo: let user decide to call default constructor or enter their own product names/ starting qtys  
   public static void main(String[] args) {
     Scanner scanner = new Scanner(System.in);
     String input = "";
@@ -18,12 +15,24 @@ public class Main {
     System.out.println(im);
     boolean endProgram = false;
     while (true) {
-      printCommands();
+      promptUser();
       input = scanner.nextLine();
       String productName;
       switch(input.toLowerCase().trim()) {
+        case "help":
+          printCommands();
+          break;
         case "inventory":
           System.out.println(im);
+          break;
+        case "contains":
+          System.out.println("Please enter the product name to search for");
+          productName = scanner.nextLine();
+          if (im.hasProduct(productName)) {
+            System.out.println(productName + " is in the Inventory with " + im.getProductAmount(productName) + " in stock.");
+          } else {
+            System.out.println(productName + " is not in the Inventory. You can add it with the 'add' command!");
+          }
           break;
         case "add":
           System.out.println("\nPlease enter the name of the product you'd like to add: ");
@@ -140,10 +149,13 @@ public class Main {
     return input.toLowerCase().trim().equals(command) || input.toLowerCase().trim().equals("'"+command+"'");
   }
 
-  //todo commands: clear inventory, 
+  public static void promptUser() {
+    System.out.println("\nPlease enter a command. type 'help' to see available commands.");
+  }
   public static void printCommands(){
     System.out.println("\n---- Please type one of the following commands: -----");
     System.out.println("\n-'inventory': Display the current inventory");
+    System.out.println("\n-'contains': Determine if a specific product is in the inventory");
     System.out.println("\n-'add': Add a new product to the inventory");
     System.out.println("\n-'remove': Remove an existing product from the inventory");
     System.out.println("\n-'restock': Adjust a product's quantity");
