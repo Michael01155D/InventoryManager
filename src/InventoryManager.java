@@ -216,7 +216,7 @@ public class InventoryManager {
     public String toString(){
         String output = "\n########################## Current Inventory ##########################\n";
         for (Product product: this.products.values()) {
-            output += product.toString();
+            output += product.toString() + " Current Stock: " + this.inventory.get(product.getName()) +"\n";
         }
         output += "\n#######################################################################\n";
         return output;

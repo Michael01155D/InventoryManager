@@ -27,6 +27,6 @@ public class Product {
 
     @Override
     public String toString() {
-        return "\nName: " + this.name + " | Serial Number: " + serialCode+" |\n";
+        return "\nName: " + this.name + " | Serial Number: " + serialCode+" |";
     }
 }
