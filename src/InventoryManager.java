@@ -7,38 +7,46 @@ import java.io.File;
 
 public class InventoryManager {
     private HashSet<String> serialNumbers;
-    private HashMap<String, String> products;
+    private HashSet<String> productNames;
+    private HashMap<String, Product> products;
     private HashMap<String, Integer> inventory;
 
     //default constructor
     public InventoryManager() {
         this.serialNumbers = new HashSet<>();
+        this.productNames = new HashSet<>();
         this.products = new HashMap<>();
         this.inventory = new HashMap<>();
         //populate default inventory with 5 randomly generated and unique starting items:
         for (int i = 0; i < 5; i++) {
-            String serialCode = createSerialCode();
-            String productName = createRandomProduct();
-            this.products.put(serialCode, productName);
+            String productName = this.getRandomProductName();
+            String productCode = this.createUniqueSerialCode();
+            int startingInventory = new Random().nextInt(1, 1000);
+            Product newProduct = new Product(productName, productCode);
+            this.productNames.add(productName);
+            this.products.put(productCode, newProduct);
             //give each item a random starting inventory of 1-999;
-            this.inventory.put(productName, new Random().nextInt(1, 1000));
+            this.inventory.put(productName, startingInventory);
         }
     }
 
     //constructor for if user generates their own starting products and inventory
-    public InventoryManager(HashMap<String, Integer> products) {
+    public InventoryManager(HashMap<String, Integer> startingData) {
         this.serialNumbers = new HashSet<>();
+        this.productNames = new HashSet<>();
         this.products = new HashMap<>();
         this.inventory = new HashMap<>();
-        for (String productName : products.keySet()) {
-            String code = createSerialCode();
-            this.products.put(code, productName);
-            this.inventory.put(productName, products.get(productName));
+        for (String productName : startingData.keySet()) {
+            String code = createUniqueSerialCode();
+            Product newProduct = new Product(code, productName);
+            this.productNames.add(productName);
+            this.products.put(code, newProduct);
+            this.inventory.put(productName, startingData.get(productName));
         }
     }
 
     //private because called only in default constructor and addItem()
-    private String createSerialCode() {
+    private String createUniqueSerialCode() {
         final String ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
         final String NUM = "0123456789";
         Random rand = new Random();
@@ -52,10 +60,11 @@ public class InventoryManager {
         this.serialNumbers.add(code);
         return code;
     }
+
     //populate default products with random ones from txt file
-    public String createRandomProduct() {
+    public String getRandomProductName() {
         Scanner fileScan;
-        String newProduct = "";
+        String newProductName = "";
         //true if at least one item in txt file isnt in inventory
         boolean safeToAdd = false;
         try {
@@ -64,9 +73,9 @@ public class InventoryManager {
             Random rand = new Random();
             ArrayList<String> defaultProducts = new ArrayList<>();
             while (fileScan.hasNextLine()) {
-                String product = fileScan.nextLine();
-                defaultProducts.add(product.toLowerCase());
-                if (!this.products.containsKey(product)) {
+                String productName = fileScan.nextLine();
+                defaultProducts.add(productName.toLowerCase());
+                if (!this.productNames.contains(productName)) {
                     safeToAdd = true;
                 }
             }
@@ -77,35 +86,34 @@ public class InventoryManager {
             //ensure product name is distinct
             do {
                 int randIndex = rand.nextInt(defaultProducts.size());
-                newProduct = defaultProducts.get(randIndex);
-            } while (this.products.containsValue(newProduct));
+                newProductName = defaultProducts.get(randIndex);
+            } while (this.productNames.contains(newProductName));
             
         } catch(Exception e) {
             System.out.println("Error: " + e.getMessage());
-            newProduct = "Bug-Shaped Candy";
+            newProductName = "Bug-Shaped Candy";
         }
-        return newProduct;
+        return newProductName;
     }
 
     public void renameProduct(String oldName, String newName) {
         oldName = oldName.toLowerCase().trim();
         newName = newName.toLowerCase().trim();
-        if (!this.inventory.containsKey(oldName)) {
+        if (!this.productNames.contains(oldName)) {
             invalidProductError(oldName);
             return;
         }
 
-        if (this.inventory.containsKey(newName)) {
+        if (this.productNames.contains(newName)) {
             duplicateProductError(newName);
             return;
         }
 
         for (String serialCode: this.products.keySet()) {
-            if (this.products.get(serialCode).equals(oldName)) {
-                this.products.put(serialCode, newName);
-                int stock = this.inventory.get(oldName);
-                this.inventory.remove(oldName);
-                this.inventory.put(newName, stock);
+            if (this.products.get(serialCode).getName().equals(oldName)) {
+                this.products.get(serialCode).setName(newName);
+                this.productNames.remove(oldName);
+                this.productNames.add(newName);
                 System.out.println("\nSuccessfully renamed " + oldName +" to " + newName);
                 return;
             }
@@ -114,50 +122,54 @@ public class InventoryManager {
 
     public void addProduct(String productName, Scanner scanner) {
         productName = productName.toLowerCase().trim();
-        if (this.products.containsValue(productName)) {
+        if (this.productNames.contains(productName)) {
             duplicateProductError(productName);;
             return;
         }
         //code gets added to HashSet inside fn
-        String newCode = this.createSerialCode();
-        this.products.put(newCode, productName);
+        String newCode = this.createUniqueSerialCode();
+        Product newProduct = new Product(productName, newCode);
+        this.products.put(newCode, newProduct);
         System.out.println("\nSelect a starting inventory amount for " + productName + "(0 to 999)");
-        int input = 0;
+        int inputStock = 0;
         if (scanner.hasNextInt()) {
-            input = scanner.nextInt();
+            inputStock = scanner.nextInt();
             //consume \n so scanner behaves as expected
             scanner.nextLine();
         }
-        input = validateQuantity(input);
-        System.out.println("\n"+productName + " has been added to the Inventory with " + input + " in stock");
-        this.inventory.put(productName, input);
+        inputStock = validateQuantity(inputStock);
+        System.out.println("\n"+productName + " has been added to the Inventory with " + inputStock + " in stock");
+        this.inventory.put(productName, inputStock);
     }
 
     public void setInventoryAmount(String productName, int newAmount) {
         productName = productName.toLowerCase().trim();
         if (this.inventory.containsKey(productName)) {
-            newAmount = validateQuantity(newAmount);
-            this.inventory.put(productName, newAmount);
-            System.out.println("\nInventory adjustment successful, there are now " + newAmount + " " + productName + " in stock.");
-            return;
+            for (Product product: this.products.values()) {
+                if (product.getName().equals(productName)) {
+                    newAmount = validateQuantity(newAmount);
+                    this.inventory.put(productName, newAmount);
+                    System.out.println("\nInventory adjustment successful, there are now " + newAmount + " " + productName + " in stock.");
+                    return;
+                }
+            }
         }
-
         invalidProductError(productName);
     }
 
     public void removeProduct(String productName) {
         productName = productName.toLowerCase().trim();
-        if (this.inventory.containsKey(productName)) {
-            for (String serialCode : this.products.keySet()) {
-                if (this.products.get(serialCode).equals(productName)) {
-                    this.serialNumbers.remove(serialCode);
-                    this.products.remove(serialCode);
-                    this.inventory.remove(productName);
-                    System.out.println("\n"+ productName + " successfully removed from the Inventory.");
-                    return;
-                }
+        for (Product product: this.products.values()){
+            if (product.getName().equals(productName)) {
+                this.serialNumbers.remove(product.getSerialCode());
+                this.productNames.remove(productName);
+                this.products.remove(product.getSerialCode());
+                this.inventory.remove(productName);
+                System.out.println("\n"+ productName + " successfully removed from the Inventory.");
+                return;
             }
         }
+
         invalidProductError(productName);
     }
 
@@ -166,12 +178,14 @@ public class InventoryManager {
         if (this.inventory.containsKey(productName)) {
             return this.inventory.get(productName);
         }
+
         invalidProductError(productName);
         return 0;
     }
 
     public void clearInventory() {
         this.serialNumbers.clear();
+        this.productNames.clear();
         this.inventory.clear();
         this.products.clear();
         System.out.println("The Inventory has been cleared off all products.");
@@ -201,9 +215,8 @@ public class InventoryManager {
 
     public String toString(){
         String output = "\n########################## Current Inventory ##########################\n";
-        for (String serialCode: this.products.keySet()) {
-            String productName = this.products.get(serialCode);
-            output += "\nName: " + productName + " | Current Stock: " + this.inventory.get(productName) +" | Serial Number: " + serialCode+" |\n";
+        for (Product product: this.products.values()) {
+            output += product.toString();
         }
         output += "\n#######################################################################\n";
         return output;
